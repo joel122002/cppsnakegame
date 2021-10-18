@@ -34,17 +34,15 @@ public:
 };
 
 void drawThickLine(int x1, int y1, int x2, int y2, direction direction, colors color) {
-    cout << "x1 :" << x1 << "y1 :" << y1 << endl;
-    cout << "x2 :" << x2 << "y2 :" << y2 << endl;
     setcolor(color);
     if (direction == DOWN || direction == UP) {
         line(x1 - 1, y1, x2 - 1, y2);
         line(x1, y1, x2, y2);
-        line(x1, y1 + 1, x2 + 1, y2);
+        line(x1 + 1, y1, x2 + 1, y2);
     } else {
-        line(x1, y1 - 1, x2,y2 - 1);
-        line(x1, y1, x2,y2);
-        line(x1, y1 + 1, x2,y2 + 1);
+        line(x1, y1 - 1, x2, y2 - 1);
+        line(x1, y1, x2, y2);
+        line(x1, y1 + 1, x2, y2 + 1);
     }
 }
 
@@ -74,27 +72,9 @@ void moveSnake() {
                 snake[0]->tail.first++;
                 snake[0]->head.first++;
             }
-            setcolor(WHITE);
-            if (snake[0]->direction == DOWN || snake[0]->direction == UP) {
-                line(snake[0]->tail.first - 1, snake[0]->tail.second, snake[0]->head.first - 1, snake[0]->head.second);
-                line(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second);
-                line(snake[0]->tail.first + 1, snake[0]->tail.second, snake[0]->head.first + 1, snake[0]->head.second);
-            } else {
-                line(snake[0]->tail.first, snake[0]->tail.second - 1, snake[0]->head.first,snake[0]->head.first - 1);
-                line(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first,snake[0]->head.first);
-                line(snake[0]->tail.first, snake[0]->tail.second + 1, snake[0]->head.first,snake[0]->head.first + 1);
-            }
+            drawThickLine(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second, snake[0]->direction, WHITE);
             Sleep(100);
-            setcolor(BLACK);
-            if (snake[0]->direction == DOWN || snake[0]->direction == UP) {
-                line(snake[0]->tail.first - 1, snake[0]->tail.second, snake[0]->head.first - 1, snake[0]->head.second);
-                line(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second);
-                line(snake[0]->tail.first + 1, snake[0]->tail.second, snake[0]->head.first + 1, snake[0]->head.second);
-            } else {
-                line(snake[0]->tail.first, snake[0]->tail.second - 1, snake[0]->head.first,snake[0]->head.first - 1);
-                line(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first,snake[0]->head.first);
-                line(snake[0]->tail.first, snake[0]->tail.second + 1, snake[0]->head.first,snake[0]->head.first + 1);
-            }
+            drawThickLine(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second, snake[0]->direction, BLACK);
         }
         // If snake vector has more than one element then we increment or decrement the head of the last element and decrement or increment the tail of the first element
         else {
@@ -122,102 +102,20 @@ void moveSnake() {
             if (snake[0]->head == snake[0]->tail) {
                 snake.erase(snake.begin());
             }
-            // Drawing the increment in the head of the last element
-            if (snake[snake.size() - 1]->direction == UP || snake[snake.size() - 1]->direction == DOWN) {
-                // Draws a THICK white line
-                setcolor(WHITE);
-                line(snake[snake.size() - 1]->tail.first - 1, snake[snake.size() - 1]->tail.second,
-                     snake[snake.size() - 1]->head.first - 1, snake[snake.size() - 1]->head.second);
-                line(snake[snake.size() - 1]->tail.first, snake[snake.size() - 1]->tail.second,
-                     snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second);
-                line(snake[snake.size() - 1]->tail.first + 1, snake[snake.size() - 1]->tail.second,
-                     snake[snake.size() - 1]->head.first + 1, snake[snake.size() - 1]->head.second);
-                // Drawing the increment in the tail of the first element
-                if (snake[0]->direction == UP || snake[0]->direction == DOWN) {
-                    // Draws a THICK white line
-                    line(snake[0]->tail.first - 1, snake[0]->tail.second, snake[0]->head.first - 1,
-                         snake[0]->head.second);
-                    line(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second);
-                    line(snake[0]->tail.first + 1, snake[0]->tail.second, snake[0]->head.first + 1,
-                         snake[0]->head.second);
-                } else {
-                    drawThickLine(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second, snake[0]->direction, WHITE);
-                    // Draws a THICK white line
-                    line(snake[0]->tail.first, snake[0]->tail.second - 1, snake[0]->head.first,
-                         snake[0]->head.second - 1);
-                    line(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second);
-                    line(snake[0]->tail.first, snake[0]->tail.second + 1, snake[0]->head.first,
-                         snake[0]->head.second + 1);
-                }
-                // Delay for animation
-                Sleep(100);
-                // Draws a THICK black line over the white line to erase the white line to produce the animation
-                setcolor(BLACK);
-                line(snake[snake.size() - 1]->tail.first - 1, snake[snake.size() - 1]->tail.second,
-                     snake[snake.size() - 1]->head.first - 1, snake[snake.size() - 1]->head.second);
-                line(snake[snake.size() - 1]->tail.first, snake[snake.size() - 1]->tail.second,
-                     snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second);
-                line(snake[snake.size() - 1]->tail.first + 1, snake[snake.size() - 1]->tail.second,
-                     snake[snake.size() - 1]->head.first + 1, snake[snake.size() - 1]->head.second);
-                if (snake[0]->direction == UP || snake[0]->direction == DOWN) {
-                    line(snake[0]->tail.first - 1, snake[0]->tail.second, snake[0]->head.first - 1,
-                         snake[0]->head.second);
-                    line(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second);
-                    line(snake[0]->tail.first + 1, snake[0]->tail.second, snake[0]->head.first + 1,
-                         snake[0]->head.second);
-                } else {
-                    line(snake[0]->tail.first, snake[0]->tail.second - 1, snake[0]->head.first,
-                         snake[0]->head.second - 1);
-                    line(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second);
-                    line(snake[0]->tail.first, snake[0]->tail.second + 1, snake[0]->head.first,
-                         snake[0]->head.second + 1);
-                }
-            } else {
-                // Draws a THICK white line
-                setcolor(WHITE);
-                line(snake[snake.size() - 1]->tail.first, snake[snake.size() - 1]->tail.second - 1,
-                     snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second - 1);
-                line(snake[snake.size() - 1]->tail.first, snake[snake.size() - 1]->tail.second,
-                     snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second);
-                line(snake[snake.size() - 1]->tail.first, snake[snake.size() - 1]->tail.second + 1,
-                     snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second + 1);
-                if (snake[0]->direction == UP || snake[0]->direction == DOWN) {
-                    line(snake[0]->tail.first - 1, snake[0]->tail.second, snake[0]->head.first - 1,
-                         snake[0]->head.second);
-                    line(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second);
-                    line(snake[0]->tail.first + 1, snake[0]->tail.second, snake[0]->head.first + 1,
-                         snake[0]->head.second);
-                } else {
-                    line(snake[0]->tail.first, snake[0]->tail.second - 1, snake[0]->head.first,
-                         snake[0]->head.second - 1);
-                    line(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second);
-                    line(snake[0]->tail.first, snake[0]->tail.second + 1, snake[0]->head.first,
-                         snake[0]->head.second + 1);
-                }
-                // Delay for animation
-                Sleep(100);
-                // Draws a THICK black line over the white line to erase the white line to produce the animation
-                setcolor(BLACK);
-                line(snake[snake.size() - 1]->tail.first, snake[snake.size() - 1]->tail.second - 1,
-                     snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second - 1);
-                line(snake[snake.size() - 1]->tail.first, snake[snake.size() - 1]->tail.second,
-                     snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second);
-                line(snake[snake.size() - 1]->tail.first, snake[snake.size() - 1]->tail.second + 1,
-                     snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second + 1);
-                if (snake[0]->direction == UP || snake[0]->direction == DOWN) {
-                    line(snake[0]->tail.first - 1, snake[0]->tail.second, snake[0]->head.first - 1,
-                         snake[0]->head.second);
-                    line(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second);
-                    line(snake[0]->tail.first + 1, snake[0]->tail.second, snake[0]->head.first + 1,
-                         snake[0]->head.second);
-                } else {
-                    line(snake[0]->tail.first, snake[0]->tail.second - 1, snake[0]->head.first,
-                         snake[0]->head.second - 1);
-                    line(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second);
-                    line(snake[0]->tail.first, snake[0]->tail.second + 1, snake[0]->head.first,
-                         snake[0]->head.second + 1);
-                }
-            }
+            // Draws a THICK white line
+            drawThickLine(snake[snake.size() - 1]->tail.first, snake[snake.size() - 1]->tail.second,
+                          snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second,
+                          snake[snake.size() - 1]->direction, WHITE);
+            drawThickLine(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second,
+                          snake[0]->direction, WHITE);
+            // Delay for animation
+            Sleep(100);
+            // Draws a THICK black line over the white line to erase the white line to produce the animation
+            drawThickLine(snake[snake.size() - 1]->tail.first, snake[snake.size() - 1]->tail.second,
+                          snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second,
+                          snake[snake.size() - 1]->direction, BLACK);
+            drawThickLine(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second,
+                          snake[0]->direction, BLACK);
         }
     }
 }
