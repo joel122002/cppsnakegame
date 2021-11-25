@@ -107,13 +107,7 @@ void createWalls() {
 
 void generateRandomFood() {
     while (true) {
-        std::random_device rdX; // obtain a random number from hardware
-        std::mt19937 genX(rdX()); // seed the generator
-        std::uniform_int_distribution<> distrX(0, 800); // define the range
         int x = random(0, 800);
-        std::random_device rdY; // obtain a random number from hardware
-        std::mt19937 genY(rdY()); // seed the generator
-        std::uniform_int_distribution<> distrY(0, 600); // define the range
         int y = random(0, 600);;
         bool hasNoObstruction =
                 (getpixel(x, y) != 15 &&
@@ -180,103 +174,84 @@ void drawThickLine(int x1, int y1, int x2, int y2, direction direction, colors c
     }
 }
 
+void drawHead() {
+    if (snake[snake.size() - 1]->direction == UP || snake[snake.size() - 1]->direction == DOWN) {
+        putpixel(snake[snake.size() - 1]->head.first - 1, snake[snake.size() - 1]->head.second, WHITE);
+        putpixel(snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second, WHITE);
+        putpixel(snake[snake.size() - 1]->head.first + 1, snake[snake.size() - 1]->head.second, WHITE);
+    } else {
+        putpixel(snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second - 1, WHITE);
+        putpixel(snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second, WHITE);
+        putpixel(snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second + 1, WHITE);
+    }
+}
+
+void eraseTail() {
+    if (snake[0]->direction == UP) {
+        putpixel(snake[0]->tail.first - 1, snake[0]->tail.second + 1, BLACK);
+        putpixel(snake[0]->tail.first, snake[0]->tail.second + 1, BLACK);
+        putpixel(snake[0]->tail.first + 1, snake[0]->tail.second + 1, BLACK);
+    } else if (snake[0]->direction == DOWN) {
+        putpixel(snake[0]->tail.first - 1, snake[0]->tail.second - 1, BLACK);
+        putpixel(snake[0]->tail.first, snake[0]->tail.second - 1, BLACK);
+        putpixel(snake[0]->tail.first + 1, snake[0]->tail.second - 1, BLACK);
+    } else if (snake[0]->direction == LEFT) {
+        putpixel(snake[0]->tail.first + 1, snake[0]->tail.second - 1, BLACK);
+        putpixel(snake[0]->tail.first + 1, snake[0]->tail.second, BLACK);
+        putpixel(snake[0]->tail.first + 1, snake[0]->tail.second + 1, BLACK);
+    } else {
+        putpixel(snake[0]->tail.first - 1, snake[0]->tail.second - 1, BLACK);
+        putpixel(snake[0]->tail.first - 1, snake[0]->tail.second, BLACK);
+        putpixel(snake[0]->tail.first - 1, snake[0]->tail.second + 1, BLACK);
+    }
+}
+
 void moveSnake() {
     // Running animation endlessly
     while (true) {
-        // If snake vector has one element then we increment or decrement the head/tail of that element
-        if (snake.size() == 1) {
-            // Incrementing/decrementing the x or y coordinates of the head and tail to make the snake move
-            if (snake[0]->direction == DOWN) {
-                snake[0]->tail.second++;
-                snake[0]->head.second++;
-            } else if (snake[0]->direction == UP) {
-                snake[0]->tail.second--;
-                snake[0]->head.second--;
-            } else if (snake[0]->direction == LEFT) {
-                snake[0]->tail.first--;
-                snake[0]->head.first--;
-            } else {
-                snake[0]->tail.first++;
-                snake[0]->head.first++;
-            }
-            // Checks if snake has reached the food
-            vector<pair<int, int>>::iterator it;
-            it = find(foodCoordinates.begin(), foodCoordinates.end(), snake[snake.size() - 1]->head);
-            if (it != foodCoordinates.end()) {
-                for (int i = 0; i < 9; ++i) {
-                    putpixel(foodCoordinates[i].first, foodCoordinates[i].second, BLACK);
-                }
-                generateRandomFood();
-                incrementTail();
-            }
-            // Checks if the snake has hit the wall
-            if (snakeHasHitWallOrEatenItself()) {
-                break;
-            }
-            drawThickLine(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second,
-                          snake[0]->direction, WHITE);
-            Sleep(10);
-            drawThickLine(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second,
-                          snake[0]->direction, BLACK);
+        // Incrementing/Decrementing the head of the last element
+        if (snake[snake.size() - 1]->direction == DOWN) {
+            snake[snake.size() - 1]->head.second++;
+        } else if (snake[snake.size() - 1]->direction == UP) {
+            snake[snake.size() - 1]->head.second--;
+        } else if (snake[snake.size() - 1]->direction == LEFT) {
+            snake[snake.size() - 1]->head.first--;
+        } else {
+            snake[snake.size() - 1]->head.first++;
         }
-        // If snake vector has more than one element then we increment or decrement the head of the last element and decrement or increment the tail of the first element
-        else {
-            // Incrementing/Decrementing the head of the last element
-            if (snake[snake.size() - 1]->direction == DOWN) {
-                snake[snake.size() - 1]->head.second++;
-            } else if (snake[snake.size() - 1]->direction == UP) {
-                snake[snake.size() - 1]->head.second--;
-            } else if (snake[snake.size() - 1]->direction == LEFT) {
-                snake[snake.size() - 1]->head.first--;
-            } else {
-                snake[snake.size() - 1]->head.first++;
-            }
-            // Incrementing/Decrementing the tail of the last element
-            if (snake[0]->direction == DOWN) {
-                snake[0]->tail.second++;
-            } else if (snake[0]->direction == UP) {
-                snake[0]->tail.second--;
-            } else if (snake[0]->direction == LEFT) {
-                snake[0]->tail.first--;
-            } else {
-                snake[0]->tail.first++;
-            }
-            // Popping the first element if its tail and head of the fist element coincide
-            if (snake[0]->head == snake[0]->tail) {
-                snake.erase(snake.begin());
-            }
-            drawThickLine(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second,
-                          snake[0]->direction, WHITE);
-            // Checks if snake has reached the food
-            vector<pair<int, int>>::iterator it;
-            it = find(foodCoordinates.begin(), foodCoordinates.end(), snake[snake.size() - 1]->head);
-            if (it != foodCoordinates.end()) {
-                cout << "Reached Inside" << endl;
-                for (int i = 0; i < 9; ++i) {
-                    putpixel(foodCoordinates[i].first, foodCoordinates[i].second, BLACK);
-                    cout << foodCoordinates[i].first << ", " << foodCoordinates[i].second << endl;
-                }
-                generateRandomFood();
-                incrementTail();
-            }
-            // Checks if the snake has hit the wall
-            if (snakeHasHitWallOrEatenItself()) {
-                break;
-            }
-            // Draws a THICK white line
-            drawThickLine(snake[snake.size() - 1]->tail.first, snake[snake.size() - 1]->tail.second,
-                          snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second,
-                          snake[snake.size() - 1]->direction, WHITE);
-            // Checks if the snake has hit the wall
-            // Delay for animation
-            Sleep(10);
-            // Draws a THICK black line over the white line to erase the white line to produce the animation
-            drawThickLine(snake[snake.size() - 1]->tail.first, snake[snake.size() - 1]->tail.second,
-                          snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second,
-                          snake[snake.size() - 1]->direction, BLACK);
-            drawThickLine(snake[0]->tail.first, snake[0]->tail.second, snake[0]->head.first, snake[0]->head.second,
-                          snake[0]->direction, BLACK);
+        // Incrementing/Decrementing the tail of the last element
+        if (snake[0]->direction == DOWN) {
+            snake[0]->tail.second++;
+        } else if (snake[0]->direction == UP) {
+            snake[0]->tail.second--;
+        } else if (snake[0]->direction == LEFT) {
+            snake[0]->tail.first--;
+        } else {
+            snake[0]->tail.first++;
         }
+        // Popping the first element if its tail and head of the fist element coincide
+        if (snake[0]->head == snake[0]->tail) {
+            snake.erase(snake.begin());
+        }
+        eraseTail();
+        // Checks if snake has reached the food
+        vector<pair<int, int>>::iterator it;
+        it = find(foodCoordinates.begin(), foodCoordinates.end(), snake[snake.size() - 1]->head);
+        if (it != foodCoordinates.end()) {
+            cout << "Reached Inside" << endl;
+            for (int i = 0; i < 9; ++i) {
+                putpixel(foodCoordinates[i].first, foodCoordinates[i].second, BLACK);
+                cout << foodCoordinates[i].first << ", " << foodCoordinates[i].second << endl;
+            }
+            generateRandomFood();
+            incrementTail();
+        }
+        // Checks if the snake has hit the wall
+        if (snakeHasHitWallOrEatenItself()) {
+            break;
+        }
+        drawHead();
+        Sleep(5);
     }
     exit(0);
 }
@@ -285,6 +260,7 @@ int main() {
     // Initialize graphic window for the animations
     initwindow(800, 600, "Snake Game");
     Snake *initialSnake = new Snake(pair<int, int>(100, 100), pair<int, int>(100, 400), UP);
+    drawThickLine(100, 100, 100, 400, UP, WHITE);
     snake.push_back(initialSnake);
     createWalls();
     // A separate thread to run the animation on
@@ -300,12 +276,13 @@ int main() {
                         pair<int, int>(snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second),
                         UP);
                 snake.push_back(head);
+                eraseTail();
                 drawThickLine(snake[snake.size() - 2]->tail.first, snake[snake.size() - 2]->tail.second,
                               snake[snake.size() - 2]->head.first, snake[snake.size() - 2]->head.second,
                               snake[snake.size() - 2]->direction, WHITE);
             }
             Sleep(200);
-        } else if (GetAsyncKeyState(0x54)) {
+        } else if (GetAsyncKeyState(0x53)) {
             cout << "S key pressed" << endl;
             if (snake[snake.size() - 1]->direction != DOWN && snake[snake.size() - 1]->direction != UP) {
                 Snake *head = new Snake(
@@ -313,6 +290,7 @@ int main() {
                         pair<int, int>(snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second),
                         DOWN);
                 snake.push_back(head);
+                eraseTail();
                 drawThickLine(snake[snake.size() - 2]->tail.first, snake[snake.size() - 2]->tail.second,
                               snake[snake.size() - 2]->head.first, snake[snake.size() - 2]->head.second,
                               snake[snake.size() - 2]->direction, WHITE);
@@ -326,6 +304,7 @@ int main() {
                         pair<int, int>(snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second),
                         LEFT);
                 snake.push_back(head);
+                eraseTail();
                 drawThickLine(snake[snake.size() - 2]->tail.first, snake[snake.size() - 2]->tail.second,
                               snake[snake.size() - 2]->head.first, snake[snake.size() - 2]->head.second,
                               snake[snake.size() - 2]->direction, WHITE);
@@ -339,6 +318,7 @@ int main() {
                         pair<int, int>(snake[snake.size() - 1]->head.first, snake[snake.size() - 1]->head.second),
                         RIGHT);
                 snake.push_back(head);
+                eraseTail();
                 drawThickLine(snake[snake.size() - 2]->tail.first, snake[snake.size() - 2]->tail.second,
                               snake[snake.size() - 2]->head.first, snake[snake.size() - 2]->head.second,
                               snake[snake.size() - 2]->direction, WHITE);
